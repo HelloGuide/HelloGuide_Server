@@ -1,4 +1,4 @@
-var mysql = require('/Users/minkwonhong/npm-global-modules/lib/node_modules/mysql');
+var mysql = require('mysql');
 var DBname = 'mainDB';
 
 var client = mysql.createConnection({
@@ -29,6 +29,13 @@ exports.regist = function (req, res){
 	res.send("complete");
 };
 
+exports.hello = function(req, res){
+        var json ='[{"NAME":"assas","ID":"asadfaee","PW":"asdvdwe"}]';
+        console.log(json);
+        var str = JSON.parse(json);
+        console.log(str);
+        res.send('Hello/');
+};
 
 exports.unregist = function (req, res){
 	console.log('Unregistering');
@@ -52,7 +59,7 @@ exports.unregist = function (req, res){
 
 exports.join = function (name, id, pw){
 	var existMem = true;
-	client.query('select no from MemberTable where id="'+id+'"', function(err, rows){
+	client.query('select Name from MembersInfo where MemID="'+id+'"', function(err, rows){
 		if(err){
 			console.log(err);
 			console.log('error in isMember');
@@ -65,12 +72,13 @@ exports.join = function (name, id, pw){
 				console.log('not exist member');
 				existMem = false;
 				
-				client.query('insert into MemberTable(name, id, pw) values("'+name+'", "'+id+'","'+pw+'");',function(err, rows){
+				client.query('insert into MembersInfo(MemID,MemPW,Name) values("'+id+'", "'+pw+'","'+name+'");',function(err, rows){
 					if(err){
 						console.log(err);
 					console.log('error in join');
 					}else{
 						console.log('insert complete');
+						return True;
 					}
 				});
 			}
@@ -79,25 +87,5 @@ exports.join = function (name, id, pw){
 
 }
 
-exports.login = function(id, pw, res){
-	console.log('select id, pw from MemberTable where id="'+id+'"');
-	client.query('select * from MemberTable where id="'+id+'"', function(err, rows){
-		if(err){
-			console.log(err);
-			console.log('error in isMember');	
-		}else{
-			if(rows.length == 0){
-				console.log('not exist id');
-				res.send('id not exist');
-			}else if(pw != rows[0].pw){
-				res.send('incorrect pw');
-				console.log('incorrect pw');
-			}else{
-				res.send('login success');
-				console.log('login success');
-			}
-		}
-	})
-}
 
 
