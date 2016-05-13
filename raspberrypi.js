@@ -38,7 +38,7 @@ function rad2deg(rad){
 
 exports.main = function(req, res){
 	fs.readFile("html/hello_guide.html", function(err, data){
-		console.log(data);
+		res.end(data);
 	});
 /*	var query = client.query('select name from PlaceList', function(err, rows){
 		if(err)
