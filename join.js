@@ -14,7 +14,6 @@ client.connect(function(error, result){
 	if(error){
 		return;
 	}
-	console.log('connected to mysql');
 });
 
 
@@ -88,42 +87,3 @@ exports.regist = function (req, res){
 	});
 
 }
-
-exports.login = function(req, res){
-	var id = req.body.id;
-	var pw = req.body.pw;
-	console.log(id+" "+ pw);
-	client.query('select count(*) cnt from MembersInfo where ID ="'+id+'" and PW="'+pw+'"',function(err,rows){
-		if(err) console.log(err);
-		console.log(rows);
-		var cnt = rows[0].cnt;
-		if(cnt == 1){
-			console.log(cnt);
-			req.session.user_id = id;
-			res.send('login success');
-		}else{
-			console.log(cnt);
-			//res.json({result:'fail'});
-			res.send('login fail');
-		}
-	});	
-}
-
-exports.logout = function(req, res){
-	req.session.destroy(function(err){
-		if(err) console.log(err);
-		res.send('logout success');
-	})
-}
-
-exports.getPlaceList = function(req, res){
-	var query = client.query('select * from PlaceList', function(err, rows){
-		if(err)
-			console.log(err);
-		else{
-			console.log(rows);
-			res.json({places:rows});
-		}
-	});
-	//console.log(query);
-};

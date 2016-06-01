@@ -1,0 +1,75 @@
+
+/* ---------- Google Font ---------- */
+@import url(http://fonts.googleapis.com/css?family=Oswald);
+
+/* RESET STYLES */
+*, html, body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, label, fieldset, input, p, blockquote, th, td { margin:0; padding:0 }
+table { border-collapse:collapse; border-spacing:0 }
+fieldset, img { border:0 }
+address, caption, cite, code, dfn, em, strong, th, var { font-style:normal; font-weight:normal }
+ol, ul, li { list-style:none }
+caption, th { text-align:left }
+h1, h2, h3, h4, h5, h6 {font-weight:normal;padding-bottom:10px;}
+q:before, q:after { content:''}
+strong { font-weight: bold }
+em { font-style: italic }
+.italic { font-style: italic }
+.aligncenter { display:block; margin:0 auto; }
+.alignleft { float:left; margin:10px; }
+.alignright { float:right;margin:10px; }
+.no-margin{margin:0px;}
+.no-bottom{margin-bottom:0px;}
+.no-padding{padding:0px;}
+.margin-t{margin-top:25px;}
+div { position:relative } 
+a{text-decoration:none;color:#0073B2;}
+a:hover{text-decoration:underline;}
+a:active,a:focus{outline: none;}
+
+
+div,img{ 
+	-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+	-moz-box-sizing: border-box;    /* Firefox, other Gecko */
+	box-sizing: border-box;         /* Opera/IE 8+ */
+}
+
+/**** GENERAL STYLES*****/
+html{-webkit-font-smoothing:antialiased;}
+
+
+body{
+	background: url("/background.jpg") no-repeat center center fixed;	
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+}
+.mainContent {
+	margin:20px 5%;
+	font-family: Arial, Helvetica, sans-serif;
+	font-weight: bold;	
+	border-radius: 4px;
+	text-align: center;
+}
+
+h2.list_title{
+	text-align: center;
+	font-size: 80px;
+	color: white;	
+}
+
+.place_name{
+	font-size: 1.8em;	
+}
+.place_content{
+	font-size: 1.2em;	
+}
+
+.btn_margin{
+	margin:10px auto;	
+}
+
+.btn_right_section{
+	font-size: 2.5em;	
+	float:right;
+}

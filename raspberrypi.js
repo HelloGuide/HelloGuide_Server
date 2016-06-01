@@ -1,4 +1,5 @@
 var mysql = require('mysql');
+var ejs = require('ejs');
 var fs = require('fs');
 var DBname = 'mainDB';
 var exec = require('child_process').exec;
@@ -10,55 +11,92 @@ var client = mysql.createConnection({
 });	
 
 client.connect(function(error, result){
-	
 	if(error){
 		return;
 	}
 });
-exports.getDegree = function(req, res){
+
+exports.saveSearchInfo = function(req, res){
+	
 	var stdX = parseFloat(req.body.stdX);
 	var stdY = parseFloat(req.body.stdY);
 	var indexX = parseFloat(req.body.posX);
 	var indexY = parseFloat(req.body.posY);
-
-	//var distance = rad2deg(Math.acos(Math.acos(Math.sin(stdX)*Math.sin(indexX)+Math.cos(stdX)*Math.cos(indexX)*Math.cos(stdY-indexY))))*60 * 1.1515 * 1.609344;
-
-	var ret = ""
+	var name = req.body.name;
+	var piNum = parseInt(req.body.piNum);
+	
+	var theta = stdY - indexY;
+	var distance = Math.sin(deg2rad(stdX)) * Math.sin(deg2rad(indexX)) + Math.cos(deg2rad(stdX))*Math.cos(deg2rad(indexX)) * Math.cos(deg2rad(theta));
+	distance = Math.acos(distance);
+	distance = rad2deg(distance);
+	distance = distance * 60 * 1.1515 * 1.609344 * 1000;
+		
 	var degree = Math.atan2((indexX-stdX),(indexY - stdY))*(180/Math.PI);
 	if(degree < 0)
 		degree += 360;
-	ret += "degree = " +degree;// + ", distance : " + (distance * 1000);
-	res.end(ret);
+	
+	console.log("degree = " + degree + " distance = " + distance);
+	client.query('insert into DistanceAngle(angle, distance, name, raspiNum) values("'+parseInt(degree)+'", "'+parseInt(distance)+'", "'+name+'","'+piNum+'");',function(err, rows){
+		if(err)
+			console.log(err);
+	});
+	
+	res.end();
+}
 
+function deg2rad(deg){
+	return (deg * Math.PI / 180);
 }
 
 function rad2deg(rad){
 	return ((rad * 180)/Math.PI);
 }
 
-exports.main = function(req, res){
-	fs.readFile("html/hello_guide.html", function(err, data){
-		res.end(data);
-	});
-/*	var query = client.query('select name from PlaceList', function(err, rows){
+exports.getSearchDatas = function(req, res){
+	
+	client.query('select distance, angle, name from DistanceAngle where raspiNum ="'+req.query.piNum+'";', function(err, rows){
 		if(err)
 			console.log(err);
 		else{
-			console.log(rows);
-			res.writeHead(200, {'Content-Type':'text/html'});
-			var data = "<head><meta charset='utf-8'>";
-			data += "<title>HelloGuide</title>";
-			data += "<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css'>";
-			data += "<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css'>";
-			data += "<link rel='stylesheet' href='css/hello_guide.css'>";
-			res.end(data);
-			res.json({places:rows});
+			res.json(rows);
 		}
 	});
-*/	
+	
+	client.query('delete from DistanceAngle where raspiNum = "'+req.query.piNum+'";', function(err){
+		if(err)
+			console.log(err);
+	});
+	
 }
 
-exports.getCss = function(req, res){
+exports.main = function(req, res){
+	var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress ||req.connection.socket.remoteAddress;
+	console.log(ip);
+    
+  //  if(ip == "192.168.0.1"){
+		fs.readFile("html/rasp/hello_guide.html", 'utf8',function(err, data){
+			if(err){
+				console.log(err);
+			} // if
+			else
+			{
+				var query = client.query('select name, lat, lng, enName from PlaceList', function(err, rows){
+					if(err){
+						console.log(err);
+					}else{					
+						res.end(ejs.render(data,{placeList : rows}));					
+					}
+				});
+			} // else
+		}); // fs
+//	}
+//	else
+//	{
+//		res.send("incorrect IP");
+//	}
+}// main
+
+exports.getMainCss = function(req, res){
 	fs.readFile("./css/hello_guide.css", function(err, data){
 		if(err)
 			console.log(err);
@@ -66,16 +104,38 @@ exports.getCss = function(req, res){
 			res.writeHead(200, {'Content-Type':'text/css'});
 			res.end(data);
 		}
-	});	
+	});
 }
-exports.getPlaceList = function(req, res){
-	var query = client.query('select * from PlaceList', function(err, rows){
+
+exports.getAnimateCss = function(req, res){
+	fs.readFile("./css/animate.min.css", function(err, data){
 		if(err)
 			console.log(err);
 		else{
-			console.log(rows);
-			res.json({places:rows});
+			res.writeHead(200, {'Content-Type':'text/css'});
+			res.end(data);
 		}
 	});
-	//console.log(query);
-};
+}
+
+exports.getButtonCss = function(req, res){
+	fs.readFile("./css/button.css", function(err, data){
+		if(err)
+			console.log(err);
+		else{
+			res.writeHead(200, {'Content-Type':'text/css'});
+			res.end(data);
+		}
+	});
+}
+
+exports.getBGImg = function(req, res){
+	fs.readFile("./image/background.jpg", function(err, data){
+		if(err)
+		console.log(err);
+		else{
+			res.writeHead(200, {'Content-Type':'image:jpeg'});
+			res.end(data);
+		}
+	});
+}

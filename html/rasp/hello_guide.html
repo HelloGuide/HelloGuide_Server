@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<!-- HTML5 Hello world by kirupa - http://www.kirupa.com/html5/getting_your_feet_wet_html5_pg1.htm -->
+<html lang="en-us">
+
+<head>
+<meta charset="utf-8">
+<title>HelloGuide</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="css/animate.css">
+<link rel="stylesheet" href="css/button.css">
+<link rel="stylesheet" href="css/hello_guide.css">
+</head>
+
+<body>
+  <div class="mainContent">
+    <h2 class="list_title animated fadeInDown">Place List</h2>
+    <div class="row">
+      <% placeList.forEach(function(item, index){ %>
+      <div class="col-xs-6">
+        <div class="btn_margin">
+          <a type="button" href="#" role="button" class="stumble-big" data-toggle="modal" data-target="#searchModal" data-lat="<%=item.lat%>" data-lng="<%=item.lng%>" data-ename="<%=item.enName%>">
+            <div class="row">
+              <div class="col-xs-10">
+                <div class="place_name"><%= item.name %></div>
+                <div class="place_content"><%= item.enName %></div>
+              </div>
+              <div class="col-xs-2">
+                <div class="btn_right_section"><i class="fa fa-arrow-right" aria-hidden="true"></i></div>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+      <% }); %>
+
+      
+    </div>
+  </div>  
+  
+  <!-- 모달 -->
+  <div class="modal fade" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="z-index : 1050">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h2 class="modal-title" id="searchModalLabel">Search</h2>
+        </div>
+        <div class="modal-body">
+          <h4 id="search_place"></h4>
+        </div>
+        <div class="modal-footer">
+          <a id="modal_close" type="button" class="btn btn-default" data-dismiss="modal">Close</a>
+          <a id="modal_Search" href="#" type="button" class="btn btn-primary">Search</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
+  <script src="https://use.fontawesome.com/54634863e3.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+  <script>
+    $('#searchModal').on('show.bs.modal', function (event) {
+      var button = $(event.relatedTarget) // Button that triggered the modal
+      var name = button.children().children("div:nth-child(1)").children(".place_name").html() // Extract info from data-* attributes
+      $('#search_place').html(name + " 위치 정보를 확인하시겠습니까?") 
+      $('#modal_Search').attr("href","javascript:goSearch('"+button.data("lat")+"','"+button.data("lng")+"','"+button.data('ename')+"');"); 
+    })
+    
+    function goSearch(indexX, indexY, name) {
+    	var xhttp = new XMLHttpRequest();
+    	xhttp.open("POST", "/rasp/goSearch", true);
+    	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    	xhttp.send("stdX="+37.579773+"&stdY="+126.976051+"&posX="+indexX+"&posY="+indexY+"&name="+name+"&piNum="+50119854);
+    	$('#searchModal').modal("hide");
+    }
+    
+  </script>
+</body>
+</html>
